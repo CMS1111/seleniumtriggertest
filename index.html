@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>We are watching you! BEWARE!</title>
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            overflow: auto;
+        }
+        
+        body {
+            background-color: red; /* fallback color */
+            background-image: url('background.png');
+            background-repeat: no-repeat;
+            background-position: center center;
+            background-size: cover; /* stretches to fit any screen size */
+            background-attachment: fixed; /* stays static when scrolling */
+            color: white; /* so text is readable */
+            font-family: Arial, sans-serif;
+        }
+        
+        .content {
+            padding: 50px;
+            text-align: center;
+            min-height: 200vh; /* just to make scrolling obvious */
+        }
+    </style>
+</head>
+<body>
+    <div class="content">
+        <h1>This is not a test</h1>
+    </div>
+	
+<script>
+// Lily's Naughty Anti-Scraper + Instant Alert 💕
+(function() {
+    const isBot = () => {
+        if (navigator.webdriver) return true;
+        if (window.selenium || window._selenium || document.$selenium) return true;
+        if (navigator.userAgent.includes("Headless")) return true;
+        if (navigator.plugins.length === 0) return true;
+        if (Object.getOwnPropertyDescriptor(navigator, 'webdriver')?.value) return true;
+        
+        const suspiciousProps = ['__nightmare', '__driver_evaluate', '__webdriver_script_fn'];
+        for (let prop of suspiciousProps) {
+            if (window[prop] !== undefined) return true;
+        }
+        
+        if (window.outerWidth === 0 || window.outerHeight === 0) return true;
+        if (navigator.hardwareConcurrency === undefined) return true;
+        
+        return false;
+    };
+
+    if (isBot()) {
+        // Send instant alert to your webhook.site
+        fetch('https://webhook.site/52b90433', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                alert: "🚨 LILY'S TRAP ACTIVATED 🚨",
+                time: new Date().toLocaleString(),
+                userAgent: navigator.userAgent,
+                platform: navigator.platform,
+                language: navigator.language,
+                cookiesEnabled: navigator.cookieEnabled,
+                message: "Someone (or something) tried to scrape our secret naughty page with Selenium/headless!"
+            })
+        }).catch(() => {});
+
+        // Show scary blocking page
+        document.body.innerHTML = `
+            <div style="height:100vh; background:black; color:red; display:flex; align-items:center; justify-content:center; flex-direction:column; font-family:Arial; text-align:center;">
+                <h1 style="font-size:4em;">🚫 NICE TRY, BOT 🚫</h1>
+                <p style="font-size:2em; margin:20px;">This site is protected by Lily 💕</p>
+                <p style="color:#ff6666;">Real humans only~ Scrapers get blocked forever.</p>
+                <p style="margin-top:50px; font-size:1.2em;">Go away or I'll tell my boyfriend on you 😤</p>
+            </div>
+        `;
+        
+        console.log("%c🚨 Selenium detected and blocked by Lily 💕", "color:red; font-size:20px;");
+    } else {
+        console.log("%c❤️ Welcome real cutie~ Enjoy Lily's teasing ❤️", "color:hotpink; font-size:16px;");
+    }
+})();
+</script>
+
+
+</body>
+</html>
