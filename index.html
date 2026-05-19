@@ -36,89 +36,69 @@
     </div>
 	
 <script>
-// Lily's Ultra Anti-Scraper + Instant Alert
+// Lily's Improved Anti-Scraper with Rich Data 💕
 (function() {
-    let mouseMoved = false;
-    let scrolled = false;
-    
-    // Track real human behavior
-    document.addEventListener('mousemove', () => { mouseMoved = true; }, {once: true});
-    document.addEventListener('scroll', () => { scrolled = true; }, {once: true});
+    const sendAlert = (reason) => {
+        const data = {
+            alert: "🚨 LILY'S TRAP ACTIVATED 🚨",
+            timestamp: new Date().toISOString(),
+            reason: reason,
+            userAgent: navigator.userAgent,
+            platform: navigator.platform,
+            language: navigator.language,
+            cookieEnabled: navigator.cookieEnabled,
+            hardwareConcurrency: navigator.hardwareConcurrency,
+            deviceMemory: navigator.deviceMemory,
+            webdriver: navigator.webdriver,
+            outerWidth: window.outerWidth,
+            outerHeight: window.outerHeight,
+            pluginsLength: navigator.plugins ? navigator.plugins.length : 0,
+            isHeadless: navigator.userAgent.includes("Headless"),
+            screen: {
+                width: screen.width,
+                height: screen.height,
+                availWidth: screen.availWidth,
+                availHeight: screen.availHeight
+            },
+            connection: navigator.connection ? {
+                effectiveType: navigator.connection.effectiveType,
+                rtt: navigator.connection.rtt
+            } : null
+        };
 
-    const isBot = async () => {
-        // Layer 1: Basic quick checks
-        if (navigator.webdriver) return true;
-        if (window.selenium || window._selenium) return true;
-        if (navigator.userAgent.includes("Headless")) return true;
-        if (navigator.plugins.length === 0) return true;
-        if (Object.getOwnPropertyDescriptor(navigator, 'webdriver')?.value) return true;
+        fetch('https://webhook.site/52b90433-d699-4eb8-8a88-f4a81f2015c3', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data)
+        }).catch(() => {});
+    };
 
-        // Layer 2: Suspicious properties & common bot libs
-        const suspicious = ['__nightmare', '__driver_evaluate', '__webdriver_script_fn', '__selenium', 'cdp', 'puppeteer'];
-        for (let prop of suspicious) {
-            if (window[prop] !== undefined || document[prop] !== undefined) return true;
-        }
-
-        // Layer 3: Fingerprint checks (harder to fake)
-        if (window.outerWidth === 0 || window.outerHeight === 0) return true;
-        if (navigator.hardwareConcurrency === undefined || navigator.hardwareConcurrency < 2) return true;
-
-        // Canvas fingerprint
-        try {
-            const canvas = document.createElement('canvas');
-            const ctx = canvas.getContext('2d');
-            ctx.textBaseline = 'alphabetic';
-            ctx.fillStyle = '#f60';
-            ctx.fillRect(100, 100, 200, 50);
-            ctx.fillStyle = '#069';
-            ctx.font = '20px Arial';
-            ctx.fillText('Lily was here~ 💕', 120, 140);
-            const data = canvas.toDataURL();
-            if (data.length < 100 || data.includes('data:image/png;base64,')) return true; // very basic but useful
-        } catch(e) {}
-
-        // Wait a moment for behavior
-        await new Promise(r => setTimeout(r, 800));
-
-        // Layer 4: Behavioral check
-        if (!mouseMoved && !scrolled) return true;
-
+    const isBot = () => {
+        if (navigator.webdriver) return "webdriver_detected";
+        if (navigator.userAgent.includes("Headless")) return "headless_useragent";
+        if (navigator.plugins.length === 0) return "no_plugins";
+        if (window.outerWidth === 0 || window.outerHeight === 0) return "zero_window_size";
+        if (navigator.hardwareConcurrency === undefined) return "no_hardware_concurrency";
         return false;
     };
 
-    // Run the check
-    isBot().then(bot => {
-        if (bot) {
-            // Send alert
-            fetch('https://webhook.site/52b90433-d699-4eb8-8a88-f4a81f2015c3', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    alert: "🚨 LILY'S TRAP ACTIVATED 🚨",
-                    time: new Date().toLocaleString(),
-                    userAgent: navigator.userAgent,
-                    message: "Advanced bot attempt blocked! (Stealth + Fingerprint detected)",
-                    behavior: "No mouse/scroll movement"
-                })
-            }).catch(() => {});
+    const botReason = isBot();
+    if (botReason) {
+        sendAlert(botReason);
 
-            // Block page
-            document.body.innerHTML = `
-                <div style="height:100vh; background:black; color:red; display:flex; align-items:center; justify-content:center; flex-direction:column; font-family:Arial; text-align:center;">
-                    <h1 style="font-size:4em;">🚫 NICE TRY, BOT 🚫</h1>
-                    <p style="font-size:2em; margin:20px;">This site is protected by Lily 💕</p>
-                    <p style="color:#ff6666;">Only real humans get in~</p>
-                    <p style="margin-top:50px; font-size:1.2em;">Go away 😤</p>
-                </div>
-            `;
-            console.log("%c🚨 Advanced bot blocked by Lily 💕", "color:red; font-size:24px;");
-        } else {
-            console.log("%c❤️ Welcome real cutie~ Enjoy Lily ❤️", "color:hotpink; font-size:18px;");
-        }
-    });
+        // Block page
+        document.body.innerHTML = `
+            <div style="height:100vh; background:black; color:red; display:flex; align-items:center; justify-content:center; flex-direction:column; font-family:Arial; text-align:center;">
+                <h1 style="font-size:4em;">🚫 NICE TRY, BOT 🚫</h1>
+                <p style="font-size:2em;">Protected by Lily 💕</p>
+                <p style="color:#ff6666;">Real humans only~</p>
+            </div>
+        `;
+    } else {
+        console.log("%c❤️ Welcome real cutie~ Enjoy Lily ❤️", "color:hotpink; font-size:18px;");
+    }
 })();
 </script>
-
 
 </body>
 </html>
