@@ -36,56 +36,86 @@
     </div>
 	
 <script>
-// Lily's Naughty Anti-Scraper + Instant Alert 💕
+// Lily's Ultra Anti-Scraper + Instant Alert
 (function() {
-    const isBot = () => {
+    let mouseMoved = false;
+    let scrolled = false;
+    
+    // Track real human behavior
+    document.addEventListener('mousemove', () => { mouseMoved = true; }, {once: true});
+    document.addEventListener('scroll', () => { scrolled = true; }, {once: true});
+
+    const isBot = async () => {
+        // Layer 1: Basic quick checks
         if (navigator.webdriver) return true;
-        if (window.selenium || window._selenium || document.$selenium) return true;
+        if (window.selenium || window._selenium) return true;
         if (navigator.userAgent.includes("Headless")) return true;
         if (navigator.plugins.length === 0) return true;
         if (Object.getOwnPropertyDescriptor(navigator, 'webdriver')?.value) return true;
-        
-        const suspiciousProps = ['__nightmare', '__driver_evaluate', '__webdriver_script_fn'];
-        for (let prop of suspiciousProps) {
-            if (window[prop] !== undefined) return true;
+
+        // Layer 2: Suspicious properties & common bot libs
+        const suspicious = ['__nightmare', '__driver_evaluate', '__webdriver_script_fn', '__selenium', 'cdp', 'puppeteer'];
+        for (let prop of suspicious) {
+            if (window[prop] !== undefined || document[prop] !== undefined) return true;
         }
-        
+
+        // Layer 3: Fingerprint checks (harder to fake)
         if (window.outerWidth === 0 || window.outerHeight === 0) return true;
-        if (navigator.hardwareConcurrency === undefined) return true;
-        
+        if (navigator.hardwareConcurrency === undefined || navigator.hardwareConcurrency < 2) return true;
+
+        // Canvas fingerprint
+        try {
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            ctx.textBaseline = 'alphabetic';
+            ctx.fillStyle = '#f60';
+            ctx.fillRect(100, 100, 200, 50);
+            ctx.fillStyle = '#069';
+            ctx.font = '20px Arial';
+            ctx.fillText('Lily was here~ 💕', 120, 140);
+            const data = canvas.toDataURL();
+            if (data.length < 100 || data.includes('data:image/png;base64,')) return true; // very basic but useful
+        } catch(e) {}
+
+        // Wait a moment for behavior
+        await new Promise(r => setTimeout(r, 800));
+
+        // Layer 4: Behavioral check
+        if (!mouseMoved && !scrolled) return true;
+
         return false;
     };
 
-    if (isBot()) {
-        // Send instant alert to your webhook.site
-        fetch('https://webhook.site/52b90433-d699-4eb8-8a88-f4a81f2015c3', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                alert: "🚨 LILY'S TRAP ACTIVATED 🚨",
-                time: new Date().toLocaleString(),
-                userAgent: navigator.userAgent,
-                platform: navigator.platform,
-                language: navigator.language,
-                cookiesEnabled: navigator.cookieEnabled,
-                message: "Someone (or something) tried to scrape our secret naughty page with Selenium/headless!"
-            })
-        }).catch(() => {});
+    // Run the check
+    isBot().then(bot => {
+        if (bot) {
+            // Send alert
+            fetch('https://webhook.site/52b90433', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    alert: "🚨 LILY'S TRAP ACTIVATED 🚨",
+                    time: new Date().toLocaleString(),
+                    userAgent: navigator.userAgent,
+                    message: "Advanced bot attempt blocked! (Stealth + Fingerprint detected)",
+                    behavior: "No mouse/scroll movement"
+                })
+            }).catch(() => {});
 
-        // Show scary blocking page
-        document.body.innerHTML = `
-            <div style="height:100vh; background:black; color:red; display:flex; align-items:center; justify-content:center; flex-direction:column; font-family:Arial; text-align:center;">
-                <h1 style="font-size:4em;">🚫 NICE TRY, BOT 🚫</h1>
-                <p style="font-size:2em; margin:20px;">This site is protected by Lily 💕</p>
-                <p style="color:#ff6666;">Real humans only~ Scrapers get blocked forever.</p>
-                <p style="margin-top:50px; font-size:1.2em;">Go away or I'll tell my boyfriend on you 😤</p>
-            </div>
-        `;
-        
-        console.log("%c🚨 Selenium detected and blocked by Lily 💕", "color:red; font-size:20px;");
-    } else {
-        console.log("%c❤️ Welcome real cutie~ Enjoy Lily's teasing ❤️", "color:hotpink; font-size:16px;");
-    }
+            // Block page
+            document.body.innerHTML = `
+                <div style="height:100vh; background:black; color:red; display:flex; align-items:center; justify-content:center; flex-direction:column; font-family:Arial; text-align:center;">
+                    <h1 style="font-size:4em;">🚫 NICE TRY, BOT 🚫</h1>
+                    <p style="font-size:2em; margin:20px;">This site is protected by Lily 💕</p>
+                    <p style="color:#ff6666;">Only real humans get in~</p>
+                    <p style="margin-top:50px; font-size:1.2em;">Go away 😤</p>
+                </div>
+            `;
+            console.log("%c🚨 Advanced bot blocked by Lily 💕", "color:red; font-size:24px;");
+        } else {
+            console.log("%c❤️ Welcome real cutie~ Enjoy Lily ❤️", "color:hotpink; font-size:18px;");
+        }
+    });
 })();
 </script>
 
